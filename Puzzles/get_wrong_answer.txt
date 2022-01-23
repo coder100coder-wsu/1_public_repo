@@ -1,0 +1,13 @@
+# Python-3
+
+def getWrongAnswers(N: int, C: str) -> str:
+  # Write your code here
+  d="D" # initialize for string concat
+  for i in range (0,N):
+    if C[i]=="A":
+      d = d+"B" #string concat
+    else:
+      d = d+"A" #string concat
+  
+  d= d[1:] #drop initalized 0th index
+  return d
