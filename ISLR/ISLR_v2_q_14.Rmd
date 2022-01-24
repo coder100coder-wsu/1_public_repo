@@ -1,0 +1,270 @@
+---
+output:
+  pdf_document: 
+    fig_caption: yes
+  html_document: default
+editor_options: 
+  chunk_output_type: inline
+  markdown: 
+    wrap: 50
+---
+
+############################################## 
+
+# ISLRv2, 3.7, Q-14
+```{r}
+set.seed (1)
+x1 <- runif (100)
+x2 <- 0.5 * x1 + rnorm (100) / 10
+y <- 2 + 2 * x1 + 0.3 * x2 + rnorm (100)
+```
+
+## The last line corresponds to creating a linear model in which y is
+a function of x1 and x2. Write out the form of the linear model.
+What are the regression coefficients?
+```{r}
+# form of linear model y <-2+ 2.15x1 +error_new
+# error_new is combination of errors resulting from combining terms
+# coefficients x1 = 2
+# coefficients x2 = 0.3
+```
+
+## (b) What is the correlation between x1 and x2? Create a scatterplot
+displaying the relationship between the variables.
+```{r}
+cor(x1,x2)
+```
+
+
+```{r}
+plot(x1,x2)
+```
+
+## (c) Using this data, fit a least squares regression to predict y using
+x1 and x2. Describe the results obtained. 
+```{r}
+lm_1 <- lm(y ~ x1 + x2)
+summary(lm_1)
+```
+#### Results displayed above, F-stat is relatively low, still higher than 1; 
+associated p-value <0.05 so relationship exists between predictors and response.
+p-value for x2 is NOT <0.05, so x2 not significant predictor.
+p-value for x1 is <0.05, so x1 is a significant predictor. 
+Although this p-value is very close to 0.05.
+
+
+###  What are b0_hat, b1_hat, and b2_hat? 
+```{r}
+# b0_hat = 2.1305
+# b1_hat = 1.4396
+# b2_hat = 1.0097
+```
+
+How do these relate to the true b0, b1, and b2? 
+```{r}
+# y <- 2 + 2 * x1 + 0.3 * x2 + rnorm (100) # original formula
+
+# b0_hat = 2.1305 > b0= 2
+# b1_hat = 1.4396 < b1= 2
+# b2_hat = 1.0097 > b2= 0.3
+```
+
+Can you reject the null hypothesis H0 : b1 = 0? 
+```{r}
+# p-value for x1 is <0.05, so x1 is a significant predictor. 
+#Although this p-value is very close to 0.05. 
+# so can reject null hypothesis H0 : b1 = 0
+```
+
+How about the null hypothesis H0 : b2 = 0?
+```{r}
+# p-value for x2 is NOT<0.05, so x2 is NOT a significant predictor. 
+# so cannot reject null hypothesis H0 : b2 = 0
+```
+
+## (d) Now fit a least squares regression to predict y using only x1. Comment on your results. 
+```{r}
+lm_2 <- lm(y ~ x1)
+summary(lm_2)
+```
+
+#### Results displayed above, F-stat is increased from previous run, 
+still higher than 1; associated p-value <0.05, 
+so relationship exists between predictors and response.
+p-value for x1 is <0.05, so x1 is a significant predictor. 
+Although this p-value is very close to 0 and very far away from 0.05.
+
+## Can you reject the null hypothesis H0 : b1 = 0?
+```{r}
+# p-value for x1 is <<0.05, so x1 is a significant predictor. 
+# so can reject null hypothesis H0 : b1 = 0
+```
+
+## (e) Now fit a least squares regression to predict y using only x2. Comment on your results.
+```{r}
+lm_3 <- lm(y ~ x2)
+summary(lm_3)
+```
+#### Results displayed above, F-stat is decreased from previous run, 
+still higher than 1; associated p-value <0.05, 
+so relationship exists between predictors and response.
+p-value for x2 is <0.05, so x2 is a significant predictor. 
+Although this p-value is very close to 0 and very far away from 0.05.
+
+## Can you reject the null hypothesis H0 : b1 = 0?
+```{r}
+# p-value for x2 is <<0.05, so x2 is a significant predictor. 
+# so can reject null hypothesis H0 : b1 = 0
+```
+
+
+## (f) Do the results obtained in (c)–(e) contradict each other? Explain your answer.
+```{r}
+# NO, results do not contradict. 
+# when predictors are highly collinear, 
+# the change in response variable due to one predictor 
+# can be masked/hidden by collinear predictor. 
+```
+
+## (g) Now suppose we obtain one additional observation, which was
+unfortunately mis-measured. 
+```{r}
+x1 <- c(x1 , 0.1)
+x2 <- c(x2 , 0.8)
+y <- c(y, 6)
+```
+
+```{r}
+cor(x1,x2)
+```
+
+```{r}
+plot(x1,x2)
+text(x=0.1, y=0.8, labels="new_data_point", pos=4, cex=0.7, col="red")
+abline(x1,x2, col="blue")
+legend(x="top",   # Coordinates of legend_box (x also accepts keywords)
+       legend =c('abline'), # Vector with the name of each group
+       fill,   # Creates boxes in the legend with the specified colors
+       col = "blue", # Color of lines or symbols
+       border = "black", # Fill box border color
+       lwd=1,         # Line type and width
+       bty = "o",        # Box type (bty = "n" removes the box)
+       bg = par("bg"),    # Background color of the legend
+       box.lwd = par("lwd"), # Legend box line width
+       box.lty = par("lty"), # Legend box line type
+       box.col = par("fg"),  # Legend box line color
+       cex = 1,          # Legend size
+       horiz = FALSE,     # Horizontal (TRUE) or vertical (FALSE) legend
+       title = NULL      # Legend title
+)
+```
+#### new data point seems to be an outlier.
+
+## Re-fit the linear models from (c) to (e) using this new data. 
+What effect does this new observation have on the each of the models?
+```{r}
+lm_4 <- lm(y~ x1+x2)
+summary(lm_4)
+```
+```{r}
+summary(lm_1)
+```
+#### for x1 & x2 predictor models; 
+old lm_1 model showed x1 to be significant based on p-value<0.05 
+and x2 not significant.
+BUT, after adding new data point,
+new lm_4 model shows x2 to be signficant based on p-value<0.05 
+and x1 not significant.
+Also RSE increased from old 1.056 to new 1.075.
+
+```{r}
+lm_5 <- lm(y~ x1)
+summary(lm_5)
+```
+
+```{r}
+summary(lm_2)
+
+```
+#### for x1 only predictor models; 
+old lm_2 model showed RSE 1.055.
+BUT, after adding new data point,
+new lm_5 model shows RSE 1.111, so RSE increased.
+
+
+```{r}
+lm_6 <- lm(y~ x2)
+summary(lm_6)
+```
+```{r}
+summary(lm_3)
+```
+#### for x2 only predictor models; 
+old lm_3 model showed RSE 1.072.
+BUT, after adding new data point,
+new lm_6 model shows RSE 1.074, so RSE increased.
+
+
+## In each model, is this observation an outlier? 
+A high-leverage point? 
+Both? Explain your answers.
+```{r}
+par(mfrow = c(2, 2))
+plot(lm_4)
+```
+
+```{r}
+plot(predict(lm_4), rstudent(lm_4))
+```
+
+```{r warning=FALSE}
+par(mfrow = c(1, 3))
+
+#calculate leverage for each predictor data point per model
+hats_lm_4 <- as.data.frame(hatvalues(lm_4)) 
+hats_lm_5 <- as.data.frame(hatvalues(lm_5)) 
+hats_lm_6 <- as.data.frame(hatvalues(lm_6)) 
+
+plot(hats_lm_4, type = 'p')
+title(main = 'lm_4, hat values plot')
+text(x=0.4, y=1, labels="new_data", pos=2, cex=0.5, col="red")
+
+plot(hats_lm_5, type = 'p')
+title(main = 'lm_5, hat values plot')
+text(x=0.05, y=1, labels="new_data", pos=1, cex=0.7, col="red")
+
+plot(hats_lm_6, type = 'p')
+title(main = 'lm_6, hat values plot')
+text(x=0.1, y=1, labels="new_data", pos=3, cex=0.5, col="red")
+
+```
+#### as observed new data point is high leverage in models lm_4 and lm_6. 
+```{r}
+par(mfrow = c(1, 3))
+plot(hatvalues(lm_4))
+title(main = 'lm_4, hat values plot')
+text(x=100, y=0.4, labels="new_data", pos=1, cex=0.5, col="red")
+
+plot(hatvalues(lm_5))
+title(main = 'lm_5, hat values plot')
+text(x=27, y=0.045, labels="OLD_data", pos=1, cex=0.5, col="green")
+
+plot(hatvalues(lm_6))
+title(main = 'lm_6, hat values plot')
+text(x=100, y=0.1, labels="new_data", pos=1, cex=0.5, col="red")
+
+```
+```{r}
+which.max(hatvalues(lm_4))
+```
+### this is high leverage and outlier 
+```{r}
+which.max(hatvalues(lm_5))
+```
+
+```{r}
+which.max(hatvalues(lm_6))
+```
+### this is high leverage and outlier 
+###############################################################################################
+
