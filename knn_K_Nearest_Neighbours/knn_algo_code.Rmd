@@ -1,0 +1,108 @@
+---
+output:
+  pdf_document: 
+    fig_caption: yes
+  html_document: default
+editor_options: 
+  chunk_output_type: inline
+  markdown: 
+    wrap: 50
+---
+
+
+############################################## 
+
+```{r}
+file_path <- "Advertising.csv"
+mk <- read.csv(file = file_path, header = T)
+mk[c(1, 3, 4)] <-
+  NULL  # Remove the unwanted columns, keep only TV and sales column
+head(mk)  # mk should now be a data frame with two columns
+
+```
+
+```{r}
+df <-
+  data.frame(mk) # new df, preserve original data. Future Improvement- do not duplicate data
+
+```
+
+```{r}
+# Write a R function to predict the sales given a TV advertising budget value,
+# by implementing the nearest neighbor averaging method.
+# Specifically, the function should return a numeric value, 
+# i.e., the predicted sales given the newTV value
+# The predicted sales should be the average of the k sales quantities 
+# in the training data whose corresponding
+# TV budget values are closest to the newTV value
+# Complete the function body
+newsales <- function(newTV, train = mk, k = 3)
+{
+  subtraction_newTV <- (newTV - df[, 'TV']) #step-1 Euclid-distance
+  df$subtraction_newTV <-
+    as.data.frame(subtraction_newTV) #store step-1 results
+  df$subtraction_squared <-
+    subtraction_newTV ^ 2 #step-2 Euclid-distance
+  df$euclid_dist <-
+    sqrt(df$subtraction_squared) #step-3 Euclid-distance
+  df <-
+    df[order(df$euclid_dist), ] #order by 'nn' or nearest neighbors, min euclid-distance
+  
+  prediction_knn = 0 #intialize variable
+  sum_knn = 0 #intialize variable
+  if (k > 1) {
+    #generalized form of 'k' nearest neighbors
+    for (i in 1:k) {
+      sum_knn = sum_knn + df[i, 'sales'] # per problem, average or mean is required, 
+      # response variable=sales
+      prediction_knn = sum_knn / k # calculate mean
+      #print(c("loop: ",i,"   prediction_knn: ", prediction_knn))
+    }
+  } else {
+    # assume k!<=0  and k always >=1
+    prediction_knn <-
+      df[1, 'sales'] # for special case, k==1,  only the 1 result is reported
+    #print(c("k=1: ",1,"   prediction_knn: ", prediction_knn))
+    
+  }
+  prediction_knn <-
+    round(prediction_knn, 2) # round to 2 decimals per problem statement
+  #print(prediction_knn)
+  return(prediction_knn)
+}
+```
+
+```{r}
+# Test code
+newsales(200)  # The result should be 13.43
+```
+
+```{r}
+# Test code
+newsales(200, k=5)  # The result should be 15.14
+```
+
+```{r}
+# Report your prediction results for the following cases 
+# (keep two digits after the decimal point)
+newsales(newTV = 180, k = 1)
+```
+
+```{r}
+# Report your prediction results for the following cases 
+# (keep two digits after the decimal point)
+newsales(newTV = 180, k = 3)
+```
+
+```{r}
+# Report your prediction results for the following cases 
+# (keep two digits after the decimal point)
+newsales(newTV = 180, k = 5)
+```
+
+```{r}
+# Report your prediction results for the following cases 
+# (keep two digits after the decimal point)
+newsales(newTV = 180, k = 7)
+
+```
