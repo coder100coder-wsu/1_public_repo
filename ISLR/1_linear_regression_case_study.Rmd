@@ -1,0 +1,378 @@
+---
+output:
+  pdf_document: 
+    fig_caption: yes
+  html_document: default
+editor_options: 
+  chunk_output_type: inline
+  markdown: 
+    wrap: 80
+---
+
+############################################## 
+ 
+```{r message=FALSE, warning=FALSE, include=FALSE}
+library(MASS)
+library(tidyverse)
+library(car)
+library(caret)
+library(leaps)
+
+```
+
+## Q1: In the Boston data set, what is the Total Sum of Squares (TSS) of the median house value medv?
+
+```{r}
+# Sum of Squares Total (SST) - The sum of squared differences between
+# individual data points (yi) and the mean of the response variable (y).
+# since question specifies medv, and no other response variable, 
+# assumption is mean of medv = mean
+# assumption is use data points of medv
+df_1 <- data.frame(Boston)
+```
+
+
+```{r}
+TSS_medv = sum( (df_1$medv - mean(x= df_1$medv) )^2 )
+TSS_medv
+```
+
+```{r}
+lm.fit <- lm(medv ~ lstat + age, data = Boston)
+summary (lm.fit)
+```
+\newpage
+
+## Q2: What is the Residual Sum of Squares (RSS) of this fit?
+```{r}
+# Residual = Observed value - Predicted value
+deviance(lm.fit) # one way to get RSS
+```
+
+```{r}
+sum(resid(lm.fit)^2) # other way to get RSS
+```
+
+## Q3: How much proportion of the variance in medv is accounted for by this fit?
+```{r}
+# get R-squared
+summary (lm.fit)$r.sq
+```
+#### based on R-squared (rounded to integer), 
+55%  variation in medv is explained by this model
+
+## Q4: Overall, is there a relationship between the response variable medv and the predictors lstat and age? How do you make such a conclusion ?
+
+#### From summary, we have F-statistic >> 1 and p-value almost zero, 
+therefore predictors have linear relationship with response.
+Also, for age predictor is p-value<0.05, so significant predictor in linear model.
+Also, for lstat predictor is p-value<0.05, so significant predictor in linear model.
+Due to reported p-values<0.05, we can reject null hypothesis;
+Null hypothesis being that their respective regression coefficients are zero.
+
+\newpage
+
+## Q5: Is there a relationship between medv and each of the predictors? How do you tell?
+```{r}
+colnames(df_1)[colnames(df_1) == "medv"] <- "response"
+```
+
+
+```{r}
+# run lm models using single-predictors
+lm_boston_1 <- lm(data = df_1, formula = response ~ df_1$zn)
+lm_boston_2 <- lm(data = df_1, formula = response ~ df_1$indus)
+lm_boston_3 <- lm(data = df_1, formula = response ~ df_1$chas)
+lm_boston_4 <- lm(data = df_1, formula = response ~ df_1$nox)
+lm_boston_5 <- lm(data = df_1, formula = response ~ df_1$rm)
+lm_boston_6 <- lm(data = df_1, formula = response ~ df_1$age)
+lm_boston_7 <- lm(data = df_1, formula = response ~ df_1$dis)
+lm_boston_8 <- lm(data = df_1, formula = response ~ df_1$rad)
+lm_boston_9 <- lm(data = df_1, formula = response ~ df_1$tax)
+lm_boston_10 <- lm(data = df_1, formula = response ~ df_1$ptratio)
+lm_boston_11 <- lm(data = df_1, formula = response ~ df_1$lstat)
+lm_boston_12 <- lm(data = df_1, formula = response ~ df_1$crim)
+```
+\newpage
+
+```{r}
+# Extract p-values
+df_p_values <- data.frame('model_name'=NA,'predictor'=NA,'p_value'=0.0, 'f_stat'=0.0, 'r-sq'=0.0)
+```
+
+```{r}
+new_row <- c(
+          'model_name' = 'lm_boston_1',
+          'predictor' = 'zn',
+          'p_value' = summary(eval(lm_boston_1))$coefficients[2, 4],
+          'f_stat' = summary(eval(lm_boston_1))$fstatistic[1],
+          'r-sq' = summary(eval(lm_boston_1))$r.squared
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_2',
+          'predictor' = 'indus',
+          'p_value' = summary(eval(lm_boston_2))$coefficients[2, 4],
+          'f_stat' = summary(eval(lm_boston_2))$fstatistic[1],
+          'r-sq' = summary(eval(lm_boston_2))$r.squared
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_3',
+          'predictor' = 'chas',
+          'p_value' = summary(eval(lm_boston_3))$coefficients[2, 4],
+          'f_stat' = summary(eval(lm_boston_3))$fstatistic[1],
+          'r-sq' = summary(eval(lm_boston_3))$r.squared
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_4',
+          'predictor' = 'nox',
+          'p_value' = summary(eval(lm_boston_4))$coefficients[2, 4],
+          'f_stat' = summary(eval(lm_boston_4))$fstatistic[1],
+          'r-sq' = summary(eval(lm_boston_4))$r.squared
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_5',
+          'predictor' = 'rm',
+          'p_value' = summary(eval(lm_boston_5))$coefficients[2, 4],
+          'f_stat' = summary(eval(lm_boston_5))$fstatistic[1],
+          'r-sq' = summary(eval(lm_boston_5))$r.squared
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_6',
+          'predictor' = 'age',
+          'p_value' = summary(eval(lm_boston_6))$coefficients[2, 4],
+          'f_stat' = summary(eval(lm_boston_6))$fstatistic[1],
+          'r-sq' = summary(eval(lm_boston_6))$r.squared
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_7',
+          'predictor' = 'dis',
+          'p_value' = summary(eval(lm_boston_7))$coefficients[2, 4],
+          'f_stat' = summary(eval(lm_boston_7))$fstatistic[1],
+          'r-sq' = summary(eval(lm_boston_7))$r.squared
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_8',
+          'predictor' = 'rad',
+          'p_value' = summary(eval(lm_boston_8))$coefficients[2, 4],
+          'f_stat' = summary(eval(lm_boston_8))$fstatistic[1],
+          'r-sq' = summary(eval(lm_boston_8))$r.squared
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_9',
+          'predictor' = 'tax',
+          'p_value' = summary(eval(lm_boston_9))$coefficients[2, 4],
+          'f_stat' = summary(eval(lm_boston_9))$fstatistic[1],
+          'r-sq' = summary(eval(lm_boston_9))$r.squared
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_10',
+          'predictor' = 'ptratio',
+          'p_value' = summary(eval(lm_boston_10))$coefficients[2, 4],
+          'f_stat' = summary(eval(lm_boston_10))$fstatistic[1],
+          'r-sq' = summary(eval(lm_boston_10))$r.squared
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_11',
+          'predictor' = 'lstat',
+          'p_value' = summary(eval(lm_boston_11))$coefficients[2, 4],
+          'f_stat' = summary(eval(lm_boston_11))$fstatistic[1],
+          'r-sq' = summary(eval(lm_boston_11))$r.squared
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_12',
+          'predictor' = 'crim',
+          'p_value' = summary(eval(lm_boston_12))$coefficients[2, 4],
+          'f_stat' = summary(eval(lm_boston_12))$fstatistic[1],
+          'r-sq' = summary(eval(lm_boston_12))$r.squared
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+```
+
+\newpage
+
+```{r}
+df_p_values$round_p_value <- round(as.numeric(df_p_values$p_value),3)
+
+alpha_threshold = 0.05 # threshold for significance of p-value
+
+#binary test against threshold for significance of p-value
+df_p_values$test_p_value <- ifelse(df_p_values$round_p_value <= alpha_threshold,1,0)
+```
+
+
+```{r}
+# sort by r-sq values
+df_p_values <- df_p_values[order(df_p_values$r.sq),]
+df_p_values
+```
+
+#### based on above p-values for uni_variate models with reponse as medv, 
+each of the p-values is <0.05, therefore each predictor exhibits linear relationship with response.
+F-stat values are also reported. Each f-stat is far greater than 1. Therefore confirming linear relationship.
+    The r-sqd values in some cases are on the lower side, so not a very a strong linear relationship, 
+however given other metrics, cannot reject that there exists a relationship between 
+response and predictor. Above df is sorted by r-sq. 
+    Strongest linear relationship is observed between predictor lstat and response medv.
+    While the weakest one is observed between predictor chas and response medv.
+\newpage
+
+## Q6: What is the estimated standard deviation of the irreducible error in the model medv=b0+b1\*lstat+b2*age+error.
+```{r}
+sigma(lm.fit)
+# The (training) RSE is measure of the lack of fit of the model 
+# to the (training) data in terms of response_variable. 
+```
+
+## Q7: How do you interpret the coefficient estimate on age, i.e., the value 0.0345, in the model context?
+#### for every unit increase in "age", the response variable "medv" increases by 0.0345 units,
+given that lstat is held constant.
+
+\newpage
+## Build a Full Model and Compute VIFs.
+```{r}
+sapply(Boston, mode)
+```
+
+```{r}
+lm.fit.full <- lm(medv ~ ., data = Boston)
+summary(lm.fit.full)
+```
+\newpage
+
+## Q8: How many predictors are used in this model fit?
+#### 13 qty. 
+
+## Q9: Which predictors have a significant effect on the response variable at a confidence level of 0.95?
+#### say threshold for p-value is set at 0.05,
+then predictors (crim, zn, chas, nox, rm, dis, rad, tax, ptratio, black, lstat) have a significant effect on the response variable at a confidence level of 0.95.
+
+## Q10: Does age present a significant effect on medv in this model?
+#### say threshold for p-value is set at 0.05,
+then predictor (age) does NOT have a significant effect on the response variable.
+
+```{r}
+VIF_age <- 1/(1-summary(lm(age ~ .-medv, data = Boston))$r.sq)
+VIF_age
+# Note that in the above line, lm(age ~ .-medv, data=Boston) means to fit a linear model for age using all columns of Boston but medv.
+```
+```{r}
+vif(lm.fit.full)
+```
+\newpage
+## exclude age from the full model and fit again.
+```{r}
+lm.fit.all_but_age <- lm(medv ~ . - age, data = Boston)
+summary(lm.fit.all_but_age)
+```
+\newpage
+## Q11: Compare the Multiple R-squared and Adjusted R-sqaured values between this model and the full model. Comment on the differences. Which model do you think is better?
+```{r}
+round(summary(lm.fit.full)$r.sq,4)
+round(summary(lm.fit.all_but_age)$r.sq,4)
+
+```
+```{r}
+round(summary(lm.fit.full)$r.sq,4) == round(summary(lm.fit.all_but_age)$r.sq,4)
+```
+#### based on multiple R-squared values, rounded to 4 decimals, cannot say which model is better.
+Differences:
+model (lm.fit.full) 
+  used 13-qty. predictors
+  F-stat significantly higher than 1, p-value almost zero
+  based on p-values, 11-qty. predictors found to have significant effect on the response variable
+  RSE is 4.75(rounded to 2 decimals)
+  
+model (lm.fit.all_but_age)
+  used 12-qty. predictors
+  F-stat significantly higher than 1 (and higher than other model), p-value almost zero
+  based on p-values, 11-qty. predictors found to have significant effect on the response variable
+  RSE is 4.74(rounded to 2 decimals) which is technically lower than other model
+  so based on RSE metric,   model(lm.fit.all_but_age) is BETTER than model(lm.fit.full) 
+  Also, this model produces lower RSE with fewer predictors, so less complex model, 
+  so model(lm.fit.all_but_age) is BETTER than model(lm.fit.full)
+
+\newpage
+## Q12: Compute the AIC and BIC of the model lm.fit.full and lm.fit.all_but_age, respectively. Use the function AIC(lm.fit.full) and BIC(lm.fit.full). Compare the two models in terms of AIC and BIC. Is the conclusion consistent with what you get in Q11?
+```{r}
+df_3 <- data.frame("AIC"= AIC(lm.fit.full), "BIC" = BIC(lm.fit.full))
+df_3 <-rbind(df_3, c("AIC"= AIC(lm.fit.all_but_age), "BIC" = BIC(lm.fit.all_but_age)))
+rownames(df_3) <- c('lm.fit.full', 'lm.fit.all_but_age')
+df_3
+
+```
+#### based on above table, 
+lower AIC is better, so model(lm.fit.all_but_age) is BETTER than model(lm.fit.full) 
+lower BIC is better, so model(lm.fit.all_but_age) is BETTER than model(lm.fit.full) 
+
+Answer agrees with Q11 conclusion (on basis of RSE and qty. of predictors used) 
+that model(lm.fit.all_but_age) is BETTER than model(lm.fit.full)
+
+\newpage
+
+# Backward Selection
+## Q13: Pick a termination criteria (i.e., Adj. R-squared, AIC or BIC) and carry out the Backward Selection procedure to find the best fit.
+
+```{r}
+# keep trace TRUE to see all models
+# backward_step_AIC <- stepAIC(lm.fit.full, direction = "backward", trace = TRUE) 
+# summary(backward_step_AIC)
+
+# only selected model 
+backward_step_AIC <- stepAIC(lm.fit.full, direction = "backward", trace = FALSE) 
+summary(backward_step_AIC)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
