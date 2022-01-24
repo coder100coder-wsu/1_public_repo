@@ -1,0 +1,505 @@
+---
+output:
+  pdf_document: 
+    fig_caption: yes
+  html_document: default
+editor_options: 
+  chunk_output_type: inline
+  markdown: 
+    wrap: 50
+---
+
+############################################## 
+
+# ISLRv2, 3.7, Q-15
+
+### Boston data set, per capita crime rate is the response, and the other variables are the predictors.
+
+### (a) For each predictor, fit a simple linear regression model to predict the response. Describe your results. In which of the models is there a statistically significant association between the predictor and the response? Create some plots to back up your assertions
+
+```{r warning=FALSE}
+library(MASS)
+library(ISLR2)
+```
+
+```{r}
+# explore structure of Boston dataset
+str(Boston)
+```
+
+### per capita crime rate is the response,
+
+```{r}
+# change colname
+df_1 <- Boston
+colnames(df_1)[colnames(df_1) == "crim"] <- "response"
+```
+
+\newpage
+
+```{r}
+# run lm models using single-predictors
+lm_boston_1 <- lm(data = df_1, formula = response ~ df_1$zn)
+lm_boston_2 <- lm(data = df_1, formula = response ~ df_1$indus)
+lm_boston_3 <- lm(data = df_1, formula = response ~ df_1$chas)
+lm_boston_4 <- lm(data = df_1, formula = response ~ df_1$nox)
+lm_boston_5 <- lm(data = df_1, formula = response ~ df_1$rm)
+lm_boston_6 <- lm(data = df_1, formula = response ~ df_1$age)
+lm_boston_7 <- lm(data = df_1, formula = response ~ df_1$dis)
+lm_boston_8 <- lm(data = df_1, formula = response ~ df_1$rad)
+lm_boston_9 <- lm(data = df_1, formula = response ~ df_1$tax)
+lm_boston_10 <- lm(data = df_1, formula = response ~ df_1$ptratio)
+lm_boston_11 <- lm(data = df_1, formula = response ~ df_1$lstat)
+lm_boston_12 <- lm(data = df_1, formula = response ~ df_1$medv)
+```
+
+\newpage
+
+```{r}
+# Extract p-values
+df_p_values <- data.frame('model_name'=NA,'predictor'=NA,'p_value'=0.0)
+```
+
+```{r}
+new_row <- c(
+          'model_name' = 'lm_boston_1',
+          'predictor' = 'zn',
+          'p_value' = summary(eval(lm_boston_1))$coefficients[2, 4]
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_2',
+          'predictor' = 'indus',
+          'p_value' = summary(eval(lm_boston_2))$coefficients[2, 4]
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_3',
+          'predictor' = 'chas',
+          'p_value' = summary(eval(lm_boston_3))$coefficients[2, 4]
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_4',
+          'predictor' = 'nox',
+          'p_value' = summary(eval(lm_boston_4))$coefficients[2, 4]
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_5',
+          'predictor' = 'rm',
+          'p_value' = summary(eval(lm_boston_5))$coefficients[2, 4]
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_6',
+          'predictor' = 'age',
+          'p_value' = summary(eval(lm_boston_6))$coefficients[2, 4]
+          )
+```
+
+\newpage
+
+```{r}
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_7',
+          'predictor' = 'dis',
+          'p_value' = summary(eval(lm_boston_7))$coefficients[2, 4]
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_8',
+          'predictor' = 'rad',
+          'p_value' = summary(eval(lm_boston_8))$coefficients[2, 4]
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_9',
+          'predictor' = 'tax',
+          'p_value' = summary(eval(lm_boston_9))$coefficients[2, 4]
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_10',
+          'predictor' = 'ptratio',
+          'p_value' = summary(eval(lm_boston_10))$coefficients[2, 4]
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_11',
+          'predictor' = 'lstat',
+          'p_value' = summary(eval(lm_boston_11))$coefficients[2, 4]
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_12',
+          'predictor' = 'medv',
+          'p_value' = summary(eval(lm_boston_12))$coefficients[2, 4]
+          )
+
+df_p_values <- rbind(df_p_values, new_row)
+```
+
+\newpage
+
+```{r}
+df_p_values
+```
+
+#### 'chas' predictor has p_value \> 0.05, so not significant.
+
+#### Rest of the predictors have p_value \< 0.05, so significant.
+
+\newpage
+
+```{r}
+par(mfrow = c(1, 1))
+plot(df_1)
+```
+
+\newpage
+
+```{r}
+plot(y=df_1$response, x=df_1$chas)
+```
+
+#### from above plots, 'response' and 'chas' do NOT exhibit a linear relationship.
+
+\newpage
+
+## (b) Fit a multiple regression model to predict the response using all of the predictors. Describe your results. For which predictors can we reject the null hypothesis H0 : b1 = 0?
+
+```{r}
+# Fit multiple regression model
+lm_boston_all <- lm(data = df_1, formula = response ~ .)
+summary(lm_boston_all)
+```
+
+#### based on multiple linear regression model using ALL predictors,
+
+#### p-values\<0.05 for (zn, dis, rad, medv), so significant, so can reject null hytothesis H0 : b1 = 0
+
+#### p-values\>0.05 for (indus, chas, nox, rm, age,tax, ptratio, lstat), so NOT significant, so CANNOT reject null hytothesis H0 : b1 = 0
+
+\newpage
+
+## (c) How do your results from (a) compare to your results from (b)?
+
+Create a plot displaying the univariate regression
+coefficients from (a) on the x-axis, and the
+multiple regression coefficients from (b) on the
+y-axis. That is, each predictor is displayed as a
+single point in the plot. Its coefficient in a
+simple linear regression model is shown on the
+x-axis, and its coefficient estimate in the
+multiple linear regression model is shown on the
+y-axis.
+
+```{r}
+# store univariate coefficients
+univar_zn <- summary(eval(lm_boston_1))$coefficients[2, 1]
+univar_indus <- summary(eval(lm_boston_2))$coefficients[2, 1]
+univar_chas <- summary(eval(lm_boston_3))$coefficients[2, 1]
+univar_nox <- summary(eval(lm_boston_4))$coefficients[2, 1]
+univar_rm <- summary(eval(lm_boston_5))$coefficients[2, 1]
+univar_age <- summary(eval(lm_boston_6))$coefficients[2, 1]
+univar_dis <- summary(eval(lm_boston_7))$coefficients[2, 1]
+univar_rad <- summary(eval(lm_boston_8))$coefficients[2, 1]
+univar_tax <- summary(eval(lm_boston_9))$coefficients[2, 1]
+univar_ptratio <- summary(eval(lm_boston_10))$coefficients[2, 1]
+univar_lstat <- summary(eval(lm_boston_11))$coefficients[2, 1]
+univar_medv <- summary(eval(lm_boston_12))$coefficients[2, 1]
+```
+
+```{r}
+df_coeff <- data.frame(
+    'zn' = univar_zn,
+    'indus' = univar_indus,
+    'chas'= univar_chas,
+    'nox'= univar_nox,
+    'rm'= univar_rm,
+    'age'= univar_age,
+    'dis'= univar_dis,
+    'rad'= univar_rad,
+    'tax'= univar_tax,
+    'ptratio' = univar_ptratio,
+    'lstat' = univar_lstat,
+    'medv' = univar_medv
+)
+rownames(df_coeff) <- c("uni_variate")
+```
+
+\newpage
+
+```{r}
+
+df_multivar_coeff <- data.frame(
+    'zn' = summary(eval(lm_boston_all))$coefficients[-1,1][['zn']],
+    'indus' = summary(eval(lm_boston_all))$coefficients[-1,1][['indus']],
+    'chas'= summary(eval(lm_boston_all))$coefficients[-1,1][['chas']],
+    'nox'= summary(eval(lm_boston_all))$coefficients[-1,1][['nox']],
+    'rm'= summary(eval(lm_boston_all))$coefficients[-1,1][['rm']],
+    'age'= summary(eval(lm_boston_all))$coefficients[-1,1][['age']],
+    'dis'= summary(eval(lm_boston_all))$coefficients[-1,1][['dis']],
+    'rad'= summary(eval(lm_boston_all))$coefficients[-1,1][['rad']],
+    'tax'= summary(eval(lm_boston_all))$coefficients[-1,1][['tax']],
+    'ptratio' = summary(eval(lm_boston_all))$coefficients[-1,1][['ptratio']],
+    'lstat' = summary(eval(lm_boston_all))$coefficients[-1,1][['lstat']],
+    'medv' = summary(eval(lm_boston_all))$coefficients[-1,1][['medv']]
+)
+rownames(df_multivar_coeff) <- c("multi_variate")
+```
+
+```{r}
+# multi_variate row
+df_coeff <- rbind(df_coeff, df_multivar_coeff[1,])
+```
+
+```{r message=FALSE, warning=FALSE}
+library(data.table)
+# transpose to get rownames as predictors
+df_coeff_transpose <- transpose(df_coeff)
+rownames(df_coeff_transpose) <- colnames(df_coeff)
+colnames(df_coeff_transpose) <- rownames(df_coeff)
+df_coeff_transpose
+```
+
+#### The coefficient estimates for predictors show changes.
+
+('indus', 'nox', 'age', 'tax', 'ptratio') above
+list has a negative coefficient in multi_variate,
+had a positive coeff. in uni_variate regression.
+('zn','rm',) above list has a positive coefficient
+in multi_variate, had a negative coeff. in
+uni_variate regression.
+
+\newpage
+
+```{r warning=FALSE}
+plot(x=df_coeff_transpose$uni_variate, y = df_coeff_transpose$multi_variate,
+     xlab = 'uni_variate', ylab= "multi_variate", main = "multi_variate_coeff V uni_variate_coeff")
+```
+
+\newpage
+
+## (d) Is there evidence of non-linear association between any of the predictors and the response? To answer this question, for each predictor X, fit a model of the form Y = b0 + b1\*X + b2\**X\**X + b3\**X\**X\*X + error.
+
+```{r}
+# lm_boston_poly_3 <- lm(data = df_1, formula = response ~ poly(df_1$chas,3))
+# Error in poly(df_1$chas, 3) : 'degree' must be less than number of unique points
+# due to error, do not use model, do not use predictor for poly regression.
+```
+
+```{r}
+# run polynomial models (cubic) for single-predictors
+lm_boston_poly_1 <- lm(data = df_1, formula = response ~ poly(df_1$zn,3))
+lm_boston_poly_2 <- lm(data = df_1, formula = response ~ poly(df_1$indus,3))
+# lm_boston_poly_3 results in error, so not using.
+lm_boston_poly_4 <- lm(data = df_1, formula = response ~ poly(df_1$nox,3))
+lm_boston_poly_5 <- lm(data = df_1, formula = response ~ poly(df_1$rm,3))
+lm_boston_poly_6 <- lm(data = df_1, formula = response ~ poly(df_1$age,3))
+lm_boston_poly_7 <- lm(data = df_1, formula = response ~ poly(df_1$dis,3))
+lm_boston_poly_8 <- lm(data = df_1, formula = response ~ poly(df_1$rad,3))
+lm_boston_poly_9 <- lm(data = df_1, formula = response ~ poly(df_1$tax,3))
+lm_boston_poly_10 <- lm(data = df_1, formula = response ~ poly(df_1$ptratio,3))
+lm_boston_poly_11 <- lm(data = df_1, formula = response ~ poly(df_1$lstat,3))
+lm_boston_poly_12 <- lm(data = df_1, formula = response ~ poly(df_1$medv,3))
+```
+
+```{r}
+df_poly_p_values <- data.frame('model_name'=NA,'predictor'=NA,
+                               'p_value_x_pow_1'=0.0, 'p_value_x_pow_2'=0.0, 'p_value_x_pow_3'=0.0)
+```
+
+\newpage
+
+```{r}
+# store p_values.
+# FUTURE IMPROVEMENT: use functions and/or loops
+new_row <- c(
+          'model_name' = 'lm_boston_poly_1',
+          'predictor' = 'zn',
+          'p_value_x_pow_1' = summary(eval(lm_boston_poly_1))$coefficients[2, 4],
+          'p_value_x_pow_2' = summary(eval(lm_boston_poly_1))$coefficients[3, 4],
+          'p_value_x_pow_3' = summary(eval(lm_boston_poly_1))$coefficients[4, 4]
+          )
+
+df_poly_p_values <- rbind(df_poly_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_poly_2',
+          'predictor' = 'zn',
+          'p_value_x_pow_1' = summary(eval(lm_boston_poly_2))$coefficients[2, 4],
+          'p_value_x_pow_2' = summary(eval(lm_boston_poly_2))$coefficients[3, 4],
+          'p_value_x_pow_3' = summary(eval(lm_boston_poly_2))$coefficients[4, 4]
+          )
+
+df_poly_p_values <- rbind(df_poly_p_values, new_row)
+
+# new_row <- c(
+#           'model_name' = 'lm_boston_poly_3',
+#           'predictor' = 'zn',
+#           'p_value_x_pow_1' = NA,
+#           'p_value_x_pow_2' = NA,
+#           'p_value_x_pow_3' = NA
+#           )
+
+# df_poly_p_values <- rbind(df_poly_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_poly_4',
+          'predictor' = 'zn',
+          'p_value_x_pow_1' = summary(eval(lm_boston_poly_4))$coefficients[2, 4],
+          'p_value_x_pow_2' = summary(eval(lm_boston_poly_4))$coefficients[3, 4],
+          'p_value_x_pow_3' = summary(eval(lm_boston_poly_4))$coefficients[4, 4]
+          )
+
+df_poly_p_values <- rbind(df_poly_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_poly_5',
+          'predictor' = 'zn',
+          'p_value_x_pow_1' = summary(eval(lm_boston_poly_5))$coefficients[2, 4],
+          'p_value_x_pow_2' = summary(eval(lm_boston_poly_5))$coefficients[3, 4],
+          'p_value_x_pow_3' = summary(eval(lm_boston_poly_5))$coefficients[4, 4]
+          )
+
+df_poly_p_values <- rbind(df_poly_p_values, new_row)
+```
+
+\newpage
+
+```{r}
+
+
+new_row <- c(
+          'model_name' = 'lm_boston_poly_6',
+          'predictor' = 'zn',
+          'p_value_x_pow_1' = summary(eval(lm_boston_poly_6))$coefficients[2, 4],
+          'p_value_x_pow_2' = summary(eval(lm_boston_poly_6))$coefficients[3, 4],
+          'p_value_x_pow_3' = summary(eval(lm_boston_poly_6))$coefficients[4, 4]
+          )
+
+df_poly_p_values <- rbind(df_poly_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_poly_7',
+          'predictor' = 'zn',
+          'p_value_x_pow_1' = summary(eval(lm_boston_poly_7))$coefficients[2, 4],
+          'p_value_x_pow_2' = summary(eval(lm_boston_poly_7))$coefficients[3, 4],
+          'p_value_x_pow_3' = summary(eval(lm_boston_poly_7))$coefficients[4, 4]
+          )
+
+df_poly_p_values <- rbind(df_poly_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_poly_8',
+          'predictor' = 'zn',
+          'p_value_x_pow_1' = summary(eval(lm_boston_poly_8))$coefficients[2, 4],
+          'p_value_x_pow_2' = summary(eval(lm_boston_poly_8))$coefficients[3, 4],
+          'p_value_x_pow_3' = summary(eval(lm_boston_poly_8))$coefficients[4, 4]
+          )
+
+df_poly_p_values <- rbind(df_poly_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_poly_9',
+          'predictor' = 'zn',
+          'p_value_x_pow_1' = summary(eval(lm_boston_poly_9))$coefficients[2, 4],
+          'p_value_x_pow_2' = summary(eval(lm_boston_poly_9))$coefficients[3, 4],
+          'p_value_x_pow_3' = summary(eval(lm_boston_poly_9))$coefficients[4, 4]
+          )
+
+df_poly_p_values <- rbind(df_poly_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_poly_10',
+          'predictor' = 'zn',
+          'p_value_x_pow_1' = summary(eval(lm_boston_poly_10))$coefficients[2, 4],
+          'p_value_x_pow_2' = summary(eval(lm_boston_poly_10))$coefficients[3, 4],
+          'p_value_x_pow_3' = summary(eval(lm_boston_poly_10))$coefficients[4, 4]
+          )
+
+df_poly_p_values <- rbind(df_poly_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_poly_11',
+          'predictor' = 'zn',
+          'p_value_x_pow_1' = summary(eval(lm_boston_poly_11))$coefficients[2, 4],
+          'p_value_x_pow_2' = summary(eval(lm_boston_poly_11))$coefficients[3, 4],
+          'p_value_x_pow_3' = summary(eval(lm_boston_poly_11))$coefficients[4, 4]
+          )
+
+df_poly_p_values <- rbind(df_poly_p_values, new_row)
+
+new_row <- c(
+          'model_name' = 'lm_boston_poly_12',
+          'predictor' = 'zn',
+          'p_value_x_pow_1' = summary(eval(lm_boston_poly_12))$coefficients[2, 4],
+          'p_value_x_pow_2' = summary(eval(lm_boston_poly_12))$coefficients[3, 4],
+          'p_value_x_pow_3' = summary(eval(lm_boston_poly_12))$coefficients[4, 4]
+          )
+
+df_poly_p_values <- rbind(df_poly_p_values, new_row)
+```
+
+\newpage
+
+```{r}
+# recast to numeric type from character type
+# round for easier display and interpretation
+df_poly_p_values$p_value_x_pow_1 <- round(as.numeric(df_poly_p_values$p_value_x_pow_1),3)
+df_poly_p_values$p_value_x_pow_2 <- round(as.numeric(df_poly_p_values$p_value_x_pow_2),3)
+df_poly_p_values$p_value_x_pow_3 <- round(as.numeric(df_poly_p_values$p_value_x_pow_3),3)
+```
+
+```{r}
+alpha_threshold = 0.05 # threshold for significance of p-value
+
+#binary test against threshold for significance of p-value
+df_poly_p_values$p_value_x_pow_1_test <- ifelse(df_poly_p_values$p_value_x_pow_1 <= alpha_threshold,1,0) 
+df_poly_p_values$p_value_x_pow_2_test <- ifelse(df_poly_p_values$p_value_x_pow_2 <= alpha_threshold,1,0) 
+df_poly_p_values$p_value_x_pow_3_test <- ifelse(df_poly_p_values$p_value_x_pow_3 <= alpha_threshold,1,0) 
+
+```
+
+```{r}
+df_poly_p_values_test <- subset(df_poly_p_values[ ,c(1,6:8)])
+
+rownames(df_poly_p_values_test)<- rownames(df_poly_p_values)
+```
+
+\newpage
+
+```{r}
+df_poly_p_values_test <- df_poly_p_values_test[-1,]
+df_poly_p_values_test
+```
+
+#### based on above output, for p-value significance test at threshold \<=0.05, resulting in (1 as \<=0.05) and (0 as \>0.05) for all poly models, x_pow_1 (x raised to 1) survives p-value test for all poly models, x_pow_2 (x raised to 2) survives p-value test. 
+
+#### THIS IS EVIDENCE OF NON-LINEAR RELATIONSHIP BETWEEN RESPONSE AND PREDICTORS. 
+
+#### for certain poly models, x_pow_3 (x raised to 3) survives p-value test, indicating that in certain 1-predictor cases for this dataset the cubic_fit results in better fit to training data (in this case ALL data is training data since no train-test split).
