@@ -1,0 +1,337 @@
+---
+output:
+  pdf_document: 
+    fig_caption: yes
+  html_document: default
+editor_options: 
+  chunk_output_type: inline
+  markdown: 
+    wrap: 50
+---
+
+############################################## 
+
+# ISLRv2, 3.7, Q-13
+
+```{r}
+set.seed(1)
+x_feature <- rnorm(n=100, mean=0, sd=1) # question calls this X
+eps <- rnorm(n=100, mean=0, sd=0.25) # question calls this eps
+y_response <- -1 + 0.5*x_feature + eps # question calls this Y vector
+
+```
+
+```{r}
+length(y_response) #What is the length of the vector y?
+
+```
+
+\#\# What are the values of b0 and b1 in this
+linear model?
+
+```{r}
+# b0 = -1 
+# b1 = 0.5
+```
+
+### Create a scatterplot displaying the relationship between x and y. Comment on what you observe
+
+```{r}
+plot(y_response ~ x_feature, 
+     main = 'Scatter plot of response V feature', 
+     col = 'red')
+```
+
+#### From above scatter_plot, linear relationship might exist between response and feature. The points are scattered around.
+
+\newpage
+
+### Fit a least squares linear model to predict y using x. Comment on the model obtained. How do b0_hat and b1_hat compare to b0 and b1? Fit simple linear regression.
+
+```{r}
+lm_1 = lm(y_response ~ x_feature)
+summary(lm_1)
+```
+
+#### from lm_summary, F-statistic is high, so relationship can be concluded to exist between response and feature. Also, p-value for x_feature is \<0.05; therefore can reject null-hypothesis that coefficient of x_feature=0. old b0=(-1) and old b1=0.5 new b0=(-1.009) and new b1=0.499 Comparing old and new values for b1 and b1, they are almost the same.
+
+\newpage
+
+### Display the least squares line on the scatterplot obtained in (d). Draw the population regression line on the plot, in a different color. Use the legend() command to create an appropriate legend.
+
+```{r}
+plot(y_response ~ x_feature, 
+     main = 'Scatter plot of response V feature', 
+     col = 'red')
+
+abline(lm_1, lwd = 1, col = "blue") # add linear regression line
+
+legend(x="topleft",   # Coordinates of legend_box (x also accepts keywords)
+       legend =c('y_predicted_response'), # Vector with the name of each group
+       fill,   # Creates boxes in the legend with the specified colors
+       col = "blue", # Color of lines or symbols
+       border = "black", # Fill box border color
+       lwd=1,         # Line type and width
+       bty = "o",        # Box type (bty = "n" removes the box)
+       bg = par("bg"),    # Background color of the legend
+       box.lwd = par("lwd"), # Legend box line width
+       box.lty = par("lty"), # Legend box line type
+       box.col = par("fg"),  # Legend box line color
+       cex = 1,          # Legend size
+       horiz = FALSE,     # Horizontal (TRUE) or vertical (FALSE) legend
+       title = NULL      # Legend title
+)
+```
+
+\newpage
+
+### Now fit a polynomial regression model that predicts y using x and x2. Is there evidence that the quadratic term improves the model fit? Explain your answer.
+
+```{r}
+
+lm_poly <- lm(y_response ~ poly(x_feature, 2))
+summary(lm_poly)
+```
+
+#### based on observation,p-value for quadratic term is NOT \<0.05, so cannot reject null hypothesis that coefficient for quadratic term is zero, so quadratic term is NOT significant.
+
+```{r}
+AIC(lm_1)
+AIC(lm_poly)
+```
+
+#### from AIC criterion, lm_poly is an improvement over lm_1 i.e. better fits the data
+
+```{r}
+summary(lm_1)$r.squared
+summary(lm_poly)$r.squared
+```
+
+#### from r-squared criterion, lm_poly is definitely an improvement over lm_1. also indicating that polynomial model tends to fit the training data better. As there is no split (train-test), all data is training data. So improvement means polynomial model explains larger proportion of the variance in the response by using feature or predictor.
+
+###################################################################### 
+
+\newpage
+
+### Repeat (a)--(f) after modifying the data generation process in such a way that there is less noise in the data. The model (3.39) should remain the same. You can do this by decreasing the variance of the normal distribution used to generate the error term ?? in (b). Describe your results.
+
+```{r echo=FALSE}
+set.seed(1)
+x_feature_2 <- rnorm(n=100, mean=0, sd=1) # question calls this X
+eps_2 <- rnorm(n=100, mean=0, sd=0.05) # question calls this eps
+y_response_2 <- -1 + 0.5*x_feature_2 + eps_2 # question calls this Y vector
+
+```
+
+## What is the length of the vector y?
+
+```{r echo=FALSE}
+length(y_response_2) 
+
+```
+
+## What are the values of b0 and b1 in this linear model?
+
+```{r}
+# b0 = -1 
+# b1 = 0.5
+```
+
+## Create a scatterplot displaying the relationship between x and y. Comment on what you observe.
+
+```{r echo=FALSE}
+plot(y_response_2 ~ x_feature_2, 
+     main = 'Scatter plot of response_2 V feature_2', 
+     col ='red')
+```
+
+#### From above scatter_plot, linear relationship most likely exists between response and feature. The points are very close together and not scattered around compared to previous runs.
+
+\newpage
+
+## Fit a least squares linear model to predict y using x. Comment on the model obtained. How do b0_hat and b1_hat compare to b0 and b1? Fit simple linear regression.
+
+```{r echo=FALSE}
+lm_2 = lm(y_response_2 ~ x_feature_2)
+summary(lm_2)
+```
+
+#### from lm_summary, F-statistic is very high, so relationship can be concluded to exist between response and feature. Also, p-value for x_feature_2 is \<0.05; therefore can reject null-hypothesis that coefficient of x_feature_2 = 0. old b0=(-1) and old b1=0.5 new b0=(-1.001) and new b1=0.499 Comparing old and new values for b1 and b1, they are almost the same.
+
+\newpage
+
+## Display the least squares line on the scatterplot obtained in (d). Draw the population regression line on the plot, in a different color. Use the legend() command to create an appropriate legend.
+
+```{r echo=FALSE}
+
+plot(y_response_2 ~ x_feature_2, 
+     main = 'Scatter plot of response_2 V feature_2', 
+     col = 'red')
+
+abline(lm_2, lwd = 1, col = "blue") # add linear regression line
+
+legend(x="topleft",   # Coordinates of legend_box (x also accepts keywords)
+       legend =c('y_predicted_response_2'), # Vector with the name of each group
+       fill,   # Creates boxes in the legend with the specified colors
+       col = "blue", # Color of lines or symbols
+       border = "black", # Fill box border color
+       lwd=1,         # Line type and width
+       bty = "o",        # Box type (bty = "n" removes the box)
+       bg = par("bg"),    # Background color of the legend
+       box.lwd = par("lwd"), # Legend box line width
+       box.lty = par("lty"), # Legend box line type
+       box.col = par("fg"),  # Legend box line color
+       cex = 1,          # Legend size
+       horiz = FALSE,     # Horizontal (TRUE) or vertical (FALSE) legend
+       title = NULL      # Legend title
+)
+```
+
+\newpage
+
+## Now fit a polynomial regression model that predicts y using x and x2. Is there evidence that the quadratic term improves the model fit? Explain your answer.
+
+```{r echo=FALSE}
+
+lm_poly_2 <- lm(y_response_2 ~ poly(x_feature_2, 2))
+summary(lm_poly_2)
+```
+
+#### based on observation, F-statistic lm_poly_2 \< lm_2, so lm_poly_2 is NOT an improvement over lm_2. Also, p-value for quadratic term is NOT \<0.05, so cannot reject null hypothesis that coefficient for quadratic term is zero, so quadratic term is NOT significant.
+
+```{r echo=FALSE}
+AIC(lm_2)
+AIC(lm_poly_2)
+```
+
+#### from AIC criterion, lm_poly_2 is an improvement over lm_2 i.e. better fits the data
+
+```{r echo=FALSE}
+summary(lm_2)$r.squared 
+summary(lm_poly_2)$r.squared
+```
+
+#### from r-squared criterion, lm_poly_2 is definitely an improvement over lm_2. also indicating that polynomial model tends to fit the training data better. As there is no split (train-test), all data is training data. So improvement means polynomial model explains larger proportion of the variance in the response by using feature or predictor.
+
+\newpage
+
+######################################################################### 
+
+## Repeat (a)--(f) after modifying the data generation process in such a way that there is more noise in the data. The model (3.39) should remain the same. You can do this by increasing the variance of the normal distribution used to generate the error term ?? in (b). Describe your results.
+
+```{r echo=FALSE}
+set.seed(1)
+x_feature_3 <- rnorm(n=100, mean=0, sd=1) # question calls this X
+eps_3 <- rnorm(n=100, mean=0, sd=0.75) # question calls this eps
+y_response_3 <- -1 + 0.5*x_feature_3 + eps_3 # question calls this Y vector
+
+```
+
+## What is the length of the vector y?
+
+```{r echo=FALSE}
+length(y_response_3) 
+
+```
+
+## What are the values of b0 and b1 in this linear model?
+
+```{r}
+# b0 = -1 
+# b1 = 0.5
+```
+
+## Create a scatterplot displaying the relationship between x and y. Comment on what you observe.
+
+```{r echo=FALSE}
+plot(y_response_3 ~ x_feature_3, 
+     main = 'Scatter plot of response_3 V feature_3', 
+     col ='red')
+```
+
+#### From above scatter_plot, (weaker than previous runs) linear relationship might exist between response and feature. however the points are more scattered than previous runs.
+
+\newpage
+
+## Fit a least squares linear model to predict y using x. Comment on the model obtained. How do b0_hat and b1_hat compare to b0 and b1? Fit simple linear regression.
+
+```{r echo=FALSE}
+lm_3 = lm(y_response_3 ~ x_feature_3)
+summary(lm_3)
+```
+
+#### from lm_summary, F-statistic is high (but significantly lower than previous runs), so relationship can be concluded to exist between response and feature. Also, p-value for x_feature_3 is \<0.05; therefore can reject null-hypothesis that coefficient of x_feature_3 = 0. old b0=(-1) and old b1=0.5 new b0=(-1.002) and new b1=0.499 Comparing old and new values for b1 and b1, they are almost the same.
+
+\newpage
+
+## Display the least squares line on the scatterplot obtained in (d). Draw the population regression line on the plot, in a different color. Use the legend() command to create an appropriate legend.
+
+```{r echo=FALSE}
+plot(y_response_3 ~ x_feature_3, 
+     main = 'Scatter plot of response_3 V feature_3', 
+     col = 'red')
+
+abline(lm_3, lwd = 1, col = "blue") # add linear regression line
+
+legend(x="topleft",   # Coordinates of legend_box (x also accepts keywords)
+       legend =c('y_predicted_response_3'), # Vector with the name of each group
+       fill,   # Creates boxes in the legend with the specified colors
+       col = "blue", # Color of lines or symbols
+       border = "black", # Fill box border color
+       lwd=1,         # Line type and width
+       bty = "o",        # Box type (bty = "n" removes the box)
+       bg = par("bg"),    # Background color of the legend
+       box.lwd = par("lwd"), # Legend box line width
+       box.lty = par("lty"), # Legend box line type
+       box.col = par("fg"),  # Legend box line color
+       cex = 1,          # Legend size
+       horiz = FALSE,     # Horizontal (TRUE) or vertical (FALSE) legend
+       title = NULL      # Legend title
+)
+```
+
+\newpage
+
+## Now fit a polynomial regression model that predicts y using x and x2. Is there evidence that the quadratic term improves the model fit? Explain your answer.
+
+```{r echo=FALSE}
+lm_poly_3 <- lm(y_response_3 ~ poly(x_feature_3, 2))
+summary(lm_poly_3)
+```
+
+#### based on observation, F-statistic lm_poly_3 \< lm_3, so lm_poly_3 is NOT an improvement over lm_3. Also, p-value for quadratic term is NOT \<0.05, so cannot reject null hypothesis that coefficient for quadratic term is zero, so quadratic term is NOT significant.
+
+```{r echo=FALSE}
+AIC(lm_3)
+AIC(lm_poly_3)
+```
+
+#### from AIC criterion, lm_poly_3 is an improvement over lm_3 i.e. better fits the data
+
+```{r echo=FALSE}
+summary(lm_3)$r.squared 
+summary(lm_poly_3)$r.squared
+```
+
+#### from r-squared criterion, lm_poly_3 is definitely an improvement over lm_3. also indicating that polynomial model tends to fit the training data better. As there is no split (train-test), all data is training data. So improvement means polynomial model explains larger proportion of the variance in the response by using feature or predictor.
+
+## What are the confidence intervals for b0 and b1 based on the original data set, the noisier data set, and the less noisy data set? Comment on your results.
+
+```{r echo=FALSE}
+confint(lm_1)
+```
+
+```{r echo=FALSE}
+confint(lm_2)
+```
+
+```{r echo=FALSE}
+confint(lm_3) 
+```
+
+#### based on results of confint, the associated confidence intervals-
+Say first run model (lm_1) is benchmark then
+narrower confint for the model (lm_2) that also
+has lower noise, wider confint for the model
+(lm_3) which has more noise.
+
