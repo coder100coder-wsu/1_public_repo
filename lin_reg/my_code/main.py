@@ -1,5 +1,5 @@
 from setup_pkgs import setup_packages
-from linear_regression import run_linear_reg
+
 
 required_pkgs = {'pandas', 'numpy', 'scikit-learn', 'statsmodels',
                  'Path','os'}
@@ -12,6 +12,7 @@ while counter_input == 1:
                                 required_pkgs=required_pkgs)
     if return_val == 1:
         counter_input = 0
+        from linear_regression import run_linear_reg
         run_linear_reg(bool_var=True,
                        column_titles='names.txt',
                         csv_data_file_name = 'autos.csv',
