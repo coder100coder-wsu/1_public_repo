@@ -1,5 +1,5 @@
 from setup_pkgs import setup_packages
-# new comment
+from make_output_dir import make_output_dir
 
 required_pkgs = {'pandas', 'numpy', 'scikit-learn', 'statsmodels',
                  'Path','os'}
@@ -12,6 +12,9 @@ while counter_input == 1:
                                 required_pkgs=required_pkgs)
     if return_val == 1:
         counter_input = 0
+        # create output dir
+        make_output_dir(input_path= 'linear_regression',
+                        output_dir_name='output_predictions')
         # import necessary function from relevant file
         from linear_regression import run_linear_reg
         run_linear_reg(bool_var=True,

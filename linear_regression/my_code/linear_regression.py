@@ -4,6 +4,8 @@ import statsmodels as stmd
 from sklearn.linear_model import LinearRegression
 import csv
 from get_file_path_for_data import  get_file_path_for_data
+from save_output import save_output_predictions
+
 
 def run_linear_reg(bool_var=False,
                    column_titles='names.txt',
@@ -58,16 +60,16 @@ def run_linear_reg(bool_var=False,
     model_lr_0 = model_lr_0.fit(X=X, y=y)
     # get results of model fitting
     r_sq = model_lr_0.score(X,y)
-    print(f"coefficient of determination, r_squared: {r_sq}")
+    # print(f"coefficient of determination, r_squared: {r_sq}")
     model_lr_0_intercept = model_lr_0.intercept_
-    print(f"intercept: {model_lr_0.intercept_}")
+    # print(f"intercept: {model_lr_0.intercept_}")
     model_lr_0_slope = model_lr_0.coef_
-    print(f"slope, coefficients: {model_lr_0.coef_}")
-    ############################################################
+    # print(f"slope, coefficients: {model_lr_0.coef_}")
     #########################################################################
     # predict using model
     y_pred = model_lr_0.predict(X)
-    print(f"predicted response for X[0:5]:\n{y_pred[0:5]}")
+    # print(f"predicted response for X[0:5]:\n{y_pred[0:5]}")
+    y_pred_df = pd.DataFrame(pd.Series(y_pred), columns=['y_pred'])
     #########################################################################
     # create NEW_data
     perturbation_in_X = np.random.choice(a=np.arange(-10,10,1), size=len(X), replace=True, p=None)
@@ -78,6 +80,16 @@ def run_linear_reg(bool_var=False,
     #########################################################################
     # predict on NEW_data
     y_pred_new = model_lr_0.predict(X_NEW)
-    print(f"predicted response for X_NEW[0:5]:\n{y_pred_new[0:5]}")
-
+    # print(f"predicted response for X_NEW[0:5]:\n{y_pred_new[0:5]}")
+    y_pred_new_df = pd.DataFrame(pd.Series(y_pred_new), columns=['y_pred'])
+    #########################################################################
+    # save predictors and predictions as pandas df to csv
+    df_inputs = pd.concat([X, X_NEW], axis=0, ignore_index=True)
+    # print("df_inputs=\n", df_inputs.head(2))
+    df_outputs = pd.concat([y_pred_df, y_pred_new_df], axis=0, ignore_index=True)
+    # print("df_outputs=\n", df_outputs.head(2))
+    df_inputs_outputs = df_inputs.copy()
+    df_inputs_outputs['y_pred'] = df_outputs[['y_pred']]
+    # print("df_inputs_outputs=\n", df_inputs_outputs.head(2))
+    save_output_predictions(input_df=df_inputs_outputs, counter=2)
     return 1

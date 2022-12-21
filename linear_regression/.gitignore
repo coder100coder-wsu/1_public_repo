@@ -183,3 +183,6 @@ fabric.properties
 # idea folder, uncomment if you don't need it
 .idea/
 
+# project_plan folder
+project_plan
+
