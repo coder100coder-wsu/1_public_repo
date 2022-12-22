@@ -50,46 +50,69 @@ def run_linear_reg(bool_var=False,
     df_1['price'] = df_1['price'].astype('int64')
     # print("\n", df_1.info())
     #########################################################################
-    # setup linear regression
-    model_lr_0 = LinearRegression(fit_intercept=True, copy_X=True, n_jobs=-1, positive=False)
     # set of predictors
     X = df_1[['city-mpg', 'highway-mpg']]
     # response or target variable
     y = df_1['price']
+    # Split the dataset into train and test
+    from sklearn.model_selection import train_test_split
+    input_test_size = 0.3
+    X_train, X_test, y_train, y_test = train_test_split(X, y,
+                                                        test_size=input_test_size,
+                                                        random_state=2022)
+    ###################################################################################
+    # setup linear regression
+    model_lr_0 = LinearRegression(fit_intercept=True, copy_X=True, n_jobs=-1, positive=False)
     # fit the model
-    model_lr_0 = model_lr_0.fit(X=X, y=y)
-    # get results of model fitting
-    r_sq = model_lr_0.score(X,y)
-    # print(f"coefficient of determination, r_squared: {r_sq}")
-    model_lr_0_intercept = model_lr_0.intercept_
-    # print(f"intercept: {model_lr_0.intercept_}")
-    model_lr_0_slope = model_lr_0.coef_
-    # print(f"slope, coefficients: {model_lr_0.coef_}")
+    model_lr_0 = model_lr_0.fit(X=X_train, y=y_train)
+    # train, get results of model fitting, coefficient of determination, r_squared
+    r_sq_train = model_lr_0.score(X_train, y_train)
+    # print(f"train, coefficient of determination, r_squared: {r_sq_train}")
+    model_lr_0_intercept_train = model_lr_0.intercept_
+    # print(f"train, intercept: {model_lr_0.intercept_}")
+    model_lr_0_slope_train = model_lr_0.coef_
+    # print(f"train, slope, coefficients: {model_lr_0.coef_}")
     #########################################################################
     # predict using model
-    y_pred = model_lr_0.predict(X)
-    # print(f"predicted response for X[0:5]:\n{y_pred[0:5]}")
-    y_pred_df = pd.DataFrame(pd.Series(y_pred), columns=['y_pred'])
+    y_pred_test = model_lr_0.predict(X_test)
+    # print(f"predicted response for X[0:5]:\n{y_pred_test[0:5]}")
+    y_pred_df = pd.DataFrame(pd.Series(y_pred_test), columns=['y_pred_test'])
+    # test, get results, coefficient of determination, r_squared
+    r_sq_test = model_lr_0.score(X_test, y_test)
+    # print(f"test, coefficient of determination, r_squared: {r_sq_test}")
     #########################################################################
-    # create NEW_data
-    perturbation_in_X = np.random.choice(a=np.arange(-10,10,1), size=len(X), replace=True, p=None)
-    perturbation_in_X = np.array(perturbation_in_X)
-    # print(type(perturbation_in_X),"....",perturbation_in_X.shape)
-    X_NEW = X.multiply(perturbation_in_X, axis=0)
-    # print(X == X_NEW)
-    #########################################################################
-    # predict on NEW_data
-    y_pred_new = model_lr_0.predict(X_NEW)
-    # print(f"predicted response for X_NEW[0:5]:\n{y_pred_new[0:5]}")
-    y_pred_new_df = pd.DataFrame(pd.Series(y_pred_new), columns=['y_pred'])
-    #########################################################################
-    # save predictors and predictions as pandas df to csv
-    df_inputs = pd.concat([X, X_NEW], axis=0, ignore_index=True)
-    # print("df_inputs=\n", df_inputs.head(2))
-    df_outputs = pd.concat([y_pred_df, y_pred_new_df], axis=0, ignore_index=True)
-    # print("df_outputs=\n", df_outputs.head(2))
-    df_inputs_outputs = df_inputs.copy()
-    df_inputs_outputs['y_pred'] = df_outputs[['y_pred']]
-    # print("df_inputs_outputs=\n", df_inputs_outputs.head(2))
-    save_output_predictions(input_df=df_inputs_outputs, counter=2)
+    data = {'train_split':f"{(1-input_test_size)*100}%",
+            'test_split':f"{(input_test_size)*100}%",
+            'r_sq_train':r_sq_train,
+            'r_sq_test': r_sq_test,
+            'model_lr_0_intercept_train':model_lr_0_intercept_train,
+            'model_lr_0_slope_train': model_lr_0_slope_train,
+            }
+    df_sample = pd.DataFrame(data)
+    print('df_sample.iloc[0]=\n', df_sample.iloc[0])
+    save_output_predictions(input_df=df_sample, counter=2)
     return 1
+
+
+
+
+    # # create NEW_data
+    # # perturbation_in_X = np.random.choice(a=np.arange(10,100,1), size=len(X_test), replace=True, p=None)
+    # # perturbation_in_X = np.array(perturbation_in_X)
+    # # print(type(perturbation_in_X),"....",perturbation_in_X.shape)
+    # X_NEW = X.multiply(perturbation_in_X, axis=0)
+    # # print(X == X_NEW)
+    # #########################################################################
+    # # predict on NEW_data
+    # y_pred_new = model_lr_0.predict(X_NEW)
+    # # print(f"predicted response for X_NEW[0:5]:\n{y_pred_new[0:5]}")
+    # y_pred_new_df = pd.DataFrame(pd.Series(y_pred_new), columns=['y_pred_test'])
+    # #########################################################################
+    # # save predictors and predictions as pandas df to csv
+    # df_inputs = pd.concat([X, X_NEW], axis=0, ignore_index=True)
+    # # print("df_inputs=\n", df_inputs.head(2))
+    # df_outputs = pd.concat([y_pred_df, y_pred_new_df], axis=0, ignore_index=True)
+    # # print("df_outputs=\n", df_outputs.head(2))
+    # df_inputs_outputs = df_inputs.copy()
+    # df_inputs_outputs['y_pred_test'] = df_outputs[['y_pred_test']]
+    # # print("df_inputs_outputs=\n", df_inputs_outputs.head(2))
