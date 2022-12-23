@@ -1,0 +1,2 @@
+row_index,train_split,test_split,rfr_mae,rfr_mse,rfr_rmse
+0,70.0%,30.0%,1365.9189,3772307.9343,1942.243
