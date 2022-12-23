@@ -81,6 +81,7 @@ def run_linear_reg(bool_var=False,
     r_sq_test = model_lr_0.score(X_test, y_test)
     # print(f"test, coefficient of determination, r_squared: {r_sq_test}")
     #########################################################################
+    # collect results
     data = {'train_split':f"{(1-input_test_size)*100}%",
             'test_split':f"{(input_test_size)*100}%",
             'r_sq_train':r_sq_train,
@@ -88,9 +89,10 @@ def run_linear_reg(bool_var=False,
             'model_lr_0_intercept_train':model_lr_0_intercept_train,
             'model_lr_0_slope_train': model_lr_0_slope_train,
             }
-    df_sample = pd.DataFrame(data)
-    print('df_sample.iloc[0]=\n', df_sample.iloc[0])
-    save_output_predictions(input_df=df_sample, counter=2)
+    df_results = pd.DataFrame(data)
+    # print('df_results.iloc[0]=\n', df_results.iloc[0])
+    # write df to csv
+    save_output_predictions(input_df=df_results, counter=2)
     return 1
 
 
