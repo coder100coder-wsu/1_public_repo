@@ -5,7 +5,9 @@ import csv
 from get_file_path_for_data import  get_file_path_for_data
 from save_output import save_output_predictions
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV
 from sklearn import tree
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
@@ -48,7 +50,7 @@ def run_random_forest_regression(
                                                         test_size=input_test_size,
                                                         random_state=random_seed_value)
     # instantiate random forest regressor
-    rfr = RandomForestRegressor(n_estimators=100,  # 20 trees
+    rfr = RandomForestRegressor(n_estimators=100,  # 100 trees
                                 #max_depth=3,  # 4 levels
                                 random_state=random_seed_value)
     # fit the model
@@ -56,18 +58,28 @@ def run_random_forest_regression(
     # predict values
     y_pred = rfr.predict(X_test)
     # evaluate model performance
-    rfr_mae = mean_absolute_error(y_test, y_pred)
-    rfr_mse = mean_squared_error(y_test, y_pred)
-    rfr_rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-    # print('Mean Absolute Error:', rfr_mae)
-    # print('Mean Squared Error:', rfr_mse)
-    # print('Root Mean Squared Error:', rfr_rmse)
+    rfr_mae_not_cv = mean_absolute_error(y_test, y_pred)
+    rfr_mse_not_cv = mean_squared_error(y_test, y_pred)
+    rfr_rmse_not_cv = np.sqrt(mean_squared_error(y_test, y_pred))
+    # print('Mean Absolute Error:', rfr_mae_not_cv)
+    # print('Mean Squared Error:', rfr_mse_not_cv)
+    # print('Root Mean Squared Error:', rfr_rmse_not_cv)
+    ##########################################################################################
+    # use cross validation with random forest regression, cv
+    rfr_cv_scores = cross_val_score(rfr, X, y, cv=10,
+                                    scoring="neg_mean_squared_error")
+    forest_rmse_scores = np.sqrt(-rfr_cv_scores)
+    rfr_rmse_with_cv_mean = forest_rmse_scores.mean()
+    rfr_rmse_with_cv_std_dev = forest_rmse_scores.std()
+    ##########################################################################################
     # compile results into dict
     results_data = {'train_split': f"{(1 - input_test_size) * 100}%",
                     'test_split': f"{(input_test_size) * 100}%",
-                    'rfr_mae': round(rfr_mae,4),
-                    'rfr_mse': round(rfr_mse,4),
-                    'rfr_rmse': round(rfr_rmse,4)
+                    'rfr_mae_not_cv': round(rfr_mae_not_cv,4),
+                    'rfr_mse_not_cv': round(rfr_mse_not_cv,4),
+                    'rfr_rmse_not_cv': round(rfr_rmse_not_cv,4),
+                    'rfr_rmse_with_cv_mean': round(rfr_rmse_with_cv_mean,4),
+                    'rfr_rmse_with_cv_std_dev': round(rfr_rmse_with_cv_std_dev, 4),
                     }
     # make a df from dict
     df_results = pd.DataFrame(results_data, index=[0])
