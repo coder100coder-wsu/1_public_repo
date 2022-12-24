@@ -186,3 +186,6 @@ fabric.properties
 # project_plan folder
 project_plan
 
+#gitignore file
+*.gitignore
+
