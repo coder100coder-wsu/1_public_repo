@@ -2,7 +2,10 @@ from pathlib import Path
 import os
 
 
-def get_file_path_for_data(folder_name='ref_data', file_name='autos.csv', bool_var=False):
+def get_file_path_for_data(bool_var=False,
+                           folder_name='ref_data',
+                           sub_folder_name='linear_regression',
+                           file_name='autos.csv'):
     """
     This function returns data_file_path.
     :param bool_var: executes func if True
@@ -15,7 +18,10 @@ def get_file_path_for_data(folder_name='ref_data', file_name='autos.csv', bool_v
     dir_path = os.path.dirname(current_file_path)
     # print(dir_path)
     # construct data file path
-    data_file_path = dir_path + '\\' + folder_name + '\\' + file_name
+    if sub_folder_name is not None:
+        data_file_path = dir_path + '\\' + folder_name + '\\' + sub_folder_name + '\\' + file_name
+    else:
+        data_file_path = dir_path + '\\' + folder_name + '\\' + file_name
     # print(data_file_path)
     return data_file_path
 
