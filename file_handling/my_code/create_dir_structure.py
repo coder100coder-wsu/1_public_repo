@@ -1,7 +1,10 @@
 import os
 from pathlib import Path
 
-
+dir_name_dict = {'main_dir':'my_dir',
+                 'sub_dir':['ml_config','ml_models','ml_results','prog_logging','ref_data',
+                            'clean_data']
+                }
 
 def create_dir_structure(bool_start=False):
     """
@@ -16,6 +19,12 @@ def create_dir_structure(bool_start=False):
         print("Path of the current directory : \n", path_from_func)
         dir_list = get_dir_list(bool_start=True, path=path_from_func)
         # print("dir_list= \n", dir_list)
+        if not dir_name_dict['main_dir'] in dir_list:
+            make_new_dir(bool_start=True, parent_dir=path_from_func,
+                         new_dir_name=dir_name_dict['main_dir'], create=1)
+        # check_if_dir_exists(bool_start=True,
+        #                     dir_name=dir_name_dict['main_dir']
+        #                     parent_dir=path_from_func)
         # if path_from_func:
         #     # parent_dir_path = go_up_given_levels_dir(bool_start=True, path_arg=path_from_func,
         #     #                                          go_up_levels=1)
@@ -96,22 +105,24 @@ def get_dir_list(bool_start=False, path=None):
         return -1
 
 
-# def make_new_dir(bool_start=False, path=None):
-#     if bool_start and path is not None:
-#         dir_exists = check_if_dir_exists(bool_start=False, dir_name=None)
-#         dir_list= os.listdir(path)
-#         print("dir_list= \n", (dir_list,":",[type(dir) for dir in dir_list]))
-#         return dir_list
-#     else:
-#         return -1
+def make_new_dir(bool_start=False, parent_dir=None, new_dir_name=None, create=1):
+    if bool_start and parent_dir is not None and new_dir_name is not None and create==1:
+        try:
+            new_dir_path = os.path.join(parent_dir, new_dir_name)
+            print("new_dir_path= \n", new_dir_path)
+            return new_dir_path
+        except OSError as error:
+            print(error)
+    else:
+        return -1
 
 
-# def check_if_dir_exists(bool_start=False, dir_name=None):
-#     if bool_start and dir_name is not None:
-#         full_path = os.path.realpath(__file__)
-#         return full_path
-#     else:
-#         return -1
+def check_if_dir_exists(bool_start=False, dir_name=None):
+    if bool_start and dir_name is not None:
+        full_path = os.path.realpath(__file__)
+        return full_path
+    else:
+        return -1
 
 
 create_dir_structure(bool_start=True)
