@@ -1,0 +1,2 @@
+row_index,train_split,test_split,final_rfr_best_grd_cv_mae,final_rfr_best_grd_cv_mse,final_rfr_best_grd_cv_rmse,min_95_cnfd_lvl,max_95_cnfd_lvl
+0,70.0%,30.0%,1295.8191,3400224.8976,1843.9699,1241.2163,2293.4323
