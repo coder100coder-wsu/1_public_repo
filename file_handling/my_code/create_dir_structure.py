@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import json
 
 dir_name_dict = {'main_dir':'my_dir',
                  'sub_dir':['ml_config','ml_models','ml_results','prog_logging','ref_data',
@@ -17,6 +18,7 @@ def create_dir_structure_func(bool_start=False):
     if bool_start:
         # get the path_from_func of the current directory
         path_from_func = get_current_dir(bool_start=True)
+        path_from_func_to_file = path_from_func
         path_from_func = Path(path_from_func)
         print("path_from_func : \n", path_from_func)
         dir_list = get_dir_list(bool_start=True, path=path_from_func)
@@ -34,42 +36,18 @@ def create_dir_structure_func(bool_start=False):
                 new_sub_dir_struct_paths_list.append(new_sub_dir_path)
             print("new_sub_dir_struct_paths_list=\n", new_sub_dir_struct_paths_list)
             # print("new_dir_struct_path : \n", new_dir_struct_path)
+        # construct a dict
+        out_dict = {
+                    "root_dir": path_from_func_to_file,
+                    "new_dir_struct_path": new_dir_struct_path,
+                    "new_sub_dir_struct_paths_list": new_sub_dir_struct_paths_list,
+                   }
+        # Serializing json
+        json_object = json.dumps(out_dict, indent=4)
+        # Writing to sample.json
+        with open("results_create_dir_structure.json", "w") as outfile:
+            outfile.write(json_object)
 
-        # check_if_dir_exists(bool_start=True,
-        #                     dir_name=dir_name_dict['main_dir']
-        #                     parent_dir=path_from_func)
-        # if path_from_func:
-        #     # parent_dir_path = go_up_given_levels_dir(bool_start=True, path_arg=path_from_func,
-        #     #                                          go_up_levels=1)
-        #
-        #     for root, dirs, files in os.walk(path_from_func):
-        #         print("root= \n", root)
-        #         print("parent_dir_path= \n", path_from_func)
-        #
-        #         if root == path_from_func:
-        #             for name in files:
-        #                 print("name= ", name)
-        #         print("dirs= ",[(dir, "::", len(dir)) for dir in dirs if len(dirs)!=0])
-        #     # print("root= \n", root_s)
-        #     # print("dirs= \n", dirs_s)
-        #     # print("files= \n", files_s)
-        #
-        #         # for name in files:
-        #             # if name.endswith(("lib", ".so")):
-        #             #     os.path.join(root, name)
-        #
-        #
-        #     # try:
-        #     #     os.mkdir(path)
-        #     # except OSError as error:
-        #     #     print(error)
-
-        # # get the name of the current directory
-        # repn = get_basename(bool_start=True, path=path_from_func)
-        # print("Name of the current directory : \n" + repn)
-        # # get the script path_from_func
-        # path_from_func = get_full_path(bool_start=True)
-        # print("The script path_from_func is : \n" + path_from_func)
         return 1
     else:
         return -1
@@ -141,5 +119,5 @@ def check_if_dir_exists(bool_start=False, dir_name=None):
     else:
         return -1
 
-
-create_dir_structure_func(bool_start=True)
+# uncomment below for local testing
+# create_dir_structure_func(bool_start=True)

@@ -1,4 +1,4 @@
-import create_dir_structure
+from create_dir_structure import create_dir_structure_func
 
 
 create_dir_structure_func(bool_start=True)
